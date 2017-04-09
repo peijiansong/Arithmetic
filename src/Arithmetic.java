@@ -8,17 +8,18 @@ public class Arithmetic {
     int wrong;
 
     public void Frame(){                                      //框架结构
-        System.out.println("同学你接下来将要面对10道小学三年级的奥数计算题，请仔细作答！");
+        System.out.println("同学你接下来将要面对10道小学三年级的奥数计算题，请仔细作答！（输入“Esc可退出程序”）");
         int cc=0;                                       //用于接收分子分母最大公约数的cc
         for(int i=1;i<=10;i++)
         {
             String result_right="";
-            int denominator_x=(int)(Math.random()*100);   //产生1-100的数作为第一个分数的分母
+            int num=100;
+            int denominator_x=(int)(Math.random()*num)+1;   //产生1-100的数作为第一个分数的分母
             int numerator_x=(int)(Math.random()*denominator_x);     //产生比分母小的数作为第一个分数的分子
-            int denominator_y=(int)(Math.random()*100);   //产生1-100的数作为第二个分数的分母
+            int denominator_y=(int)(Math.random()*num)+1;   //产生1-100的数作为第二个分数的分母
             int numerator_y=(int)(Math.random()*denominator_y);     //产生比分母小的数作为第二个分数的分子
-            int x=(int)(Math.random()*100);             //第一个整数x
-            int y=(int)(Math.random()*100);             //第二个整数y
+            int x=(int)(Math.random()*num);             //第一个整数x
+            int y=(int)(Math.random()*num)+1;             //第二个整数y
             int n=(int)(Math.random()*12)+1;
             switch (n){                                 //1-4为整数间的运算，5-8为整数与分数的运算，9-12为分数间的运算
                 case 1:
@@ -39,9 +40,19 @@ public class Arithmetic {
                 case 4:
                     System.out.println(i+".  "+x+" ÷ "+y+" = ");
                     cc=GCD(x,y);
-                    result_right=""+((x/cc)/(y/cc));
-                    Judge(result_right);
-                    break;
+                    if (DenominatorIsOne((y/cc)))
+                    {
+                        result_right=""+x/cc;
+                        Judge(result_right);
+                        break;
+                    }
+                    else
+                    {
+                        result_right = "" + ((x / cc) + "/" + (y / cc));
+                        Judge(result_right);
+                        break;
+                    }
+
                 case 5:
                     System.out.println(i+".  "+x+" ＋ "+numerator_x+"/"+denominator_x+" = ");
                     cc=GCD(x*denominator_x+numerator_x,denominator_x);
@@ -69,8 +80,8 @@ public class Arithmetic {
                 case 9:
                     System.out.println(i+".  "+numerator_x+"/"+denominator_x+" ＋ "+numerator_y+"/"+denominator_y+" = ");
                     cc=GCD(numerator_x*denominator_y+numerator_y*denominator_x,denominator_x*denominator_y);
-                    if(DenominatorIsOne((numerator_x * denominator_y + numerator_y * denominator_x) / cc,(denominator_x * denominator_y) / cc)){     //判断分母是否为1的情况
-                        result_right=""+(numerator_x*denominator_y+numerator_y*denominator_x)/cc;
+                    if(DenominatorIsOne((denominator_x * denominator_y) / cc)){     //判断分母是否为1的情况
+                        result_right=""+(numerator_x * denominator_y + numerator_y * denominator_x)/cc;
                         Judge(result_right);
                         break;
                     }
@@ -94,7 +105,7 @@ public class Arithmetic {
                 case 11:
                     System.out.println(i+".  "+numerator_x+"/"+denominator_x+" × "+numerator_y+"/"+denominator_y+" = ");
                     cc=GCD(numerator_x*numerator_y,denominator_x*denominator_y);
-                    if(DenominatorIsOne( (numerator_x * numerator_y) / cc, (denominator_x * denominator_y) / cc)) {     //判断分母是否为1的情况
+                    if(DenominatorIsOne( (denominator_x * denominator_y) / cc)) {     //判断分母是否为1的情况
                         result_right=""+(numerator_x*numerator_y)/cc;
                         Judge(result_right);
                         break;
@@ -107,7 +118,7 @@ public class Arithmetic {
                 case 12:
                     System.out.println(i+".  "+numerator_x+"/"+denominator_x+" ÷ "+numerator_y+"/"+denominator_y+" = ");
                     cc=GCD(numerator_x*denominator_y,denominator_x*numerator_y);
-                    if(DenominatorIsOne((numerator_x * denominator_y) / cc,(denominator_x * numerator_y) / cc)) {     //判断分母是否为1的情况
+                    if(DenominatorIsOne((denominator_x * numerator_y) / cc)) {     //判断分母是否为1的情况
                         result_right=""+(numerator_x*denominator_y)/cc;
                         Judge(result_right);
                         break;
@@ -126,13 +137,17 @@ public class Arithmetic {
             String result_student = "";
             Scanner result = new Scanner(System.in);
             result_student = result.next();
+            if(result_student.equals("Esc"))           //如果用户输入“Esc”则退出程序
+            {
+                System.exit(0);
+            }
             if (result_right.equals(result_student)) {
                 right++;
                 System.out.println("正确！");
             }
             else {
                 wrong++;
-                System.out.println("错误！");
+                System.out.println("错误！正确答案为 "+result_right);
             }
     }
     public int GCD(int aa,int bb){                              //求分子分母化简的最大公约数
@@ -157,10 +172,14 @@ public class Arithmetic {
                 bb=temp;
             }
         }
+        if (bb<0)
+        {
+            bb=Math.abs(bb);
+        }
         return bb;
 
     }
-    public Boolean DenominatorIsOne(int aa,int bb){
+    public Boolean DenominatorIsOne(int bb){
         if(bb==1)
             return true;
         else
